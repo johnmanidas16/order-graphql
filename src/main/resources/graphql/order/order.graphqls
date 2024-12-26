@@ -1,0 +1,208 @@
+scalar DateTime
+scalar BigDecimal
+scalar JSON
+enum OrderStatus {
+    CREATED
+    CONFIRMED
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+    REFUNDED
+}
+
+enum PaymentStatus {
+    PENDING
+    AUTHORIZED
+    CAPTURED
+    FAILED
+    REFUNDED
+}
+
+enum PaymentMethod {
+    CREDIT_CARD
+    DEBIT_CARD
+    UPI
+    NET_BANKING
+    WALLET
+    COD
+}
+
+enum ShippingPriority {
+    STANDARD
+    EXPRESS
+    NEXT_DAY
+    SAME_DAY
+}
+
+enum AddressType {
+    SHIPPING
+    BILLING
+    BOTH
+}
+
+enum DiscountType {
+    PERCENTAGE
+    FLAT_AMOUNT
+    BUY_ONE_GET_ONE
+    FREE_SHIPPING
+}
+
+type Address {
+    street: String!
+    city: String!
+    state: String!
+    country: String!
+    postalCode: String!
+    phoneNumber: String
+    isDefault: Boolean!
+    type: AddressType!
+}
+
+type PaymentDetails {
+    transactionId: String!
+    paymentMethod: PaymentMethod!
+    paymentStatus: PaymentStatus!
+    amount: BigDecimal!
+    currency: String!
+    gatewayResponse: String
+    paymentDate: DateTime!
+    additionalDetails: JSON
+}
+
+type ShipmentEvent {
+    location: String!
+    description: String!
+    timestamp: DateTime!
+}
+
+type ShippingDetails {
+    trackingNumber: String
+    carrier: String!
+    priority: ShippingPriority!
+    shippingCost: BigDecimal!
+    estimatedDeliveryDate: DateTime
+    actualDeliveryDate: DateTime
+    shippingAddress: Address!
+    shipmentHistory: [ShipmentEvent!]
+}
+
+type OrderItem {
+    productId: ID!
+    productName: String!
+    sku: String!
+    quantity: Int!
+    unitPrice: BigDecimal!
+    discount: BigDecimal
+    productAttributes: JSON
+    customizations: [String!]
+}
+
+type DiscountApplication {
+    discountId: ID!
+    discountCode: String!
+    description: String
+    amount: BigDecimal!
+    type: DiscountType!
+}
+
+type PriceBreakdown {
+    subtotal: BigDecimal!
+    tax: BigDecimal!
+    shippingCost: BigDecimal!
+    discount: BigDecimal!
+    appliedDiscounts: [DiscountApplication!]!
+    total: BigDecimal!
+}
+
+type OrderStatusHistory {
+    status: OrderStatus!
+    comment: String
+    timestamp: DateTime!
+    updatedBy: String!
+}
+
+type OrderNote {
+    note: String!
+    author: String!
+    timestamp: DateTime!
+    isCustomerVisible: Boolean!
+}
+
+type OrderDetails @key(fields: "id") {
+    id: ID!
+    orderNumber: String!
+    customerId: ID!
+    storeId: ID!
+    status: OrderStatus!
+    orderDate: DateTime!
+    lastModifiedDate: DateTime!
+    lastModifiedBy: String!
+    items: [OrderItem!]!
+    priceBreakdown: PriceBreakdown!
+    paymentDetails: PaymentDetails!
+    shippingDetails: ShippingDetails!
+    billingAddress: Address!
+    customerNotes: String
+    metadata: JSON
+    version: Int!
+    createdAt: DateTime!
+    createdBy: String!
+    statusHistory: [OrderStatusHistory!]!
+    internalNotes: [OrderNote!]!
+}
+
+extend type Query {
+    orderById(id: ID!): OrderDetails
+    orderByNumber(orderNumber: String!): OrderDetails
+    ordersByCustomer(customerId: ID!, limit: Int, offset: Int): [OrderDetails!]!
+    ordersByStatus(status: OrderStatus!, limit: Int, offset: Int): [OrderDetails!]!
+    recentOrders(limit: Int): [OrderDetails!]!
+}
+
+input AddressInput {
+    street: String!
+    city: String!
+    state: String!
+    country: String!
+    postalCode: String!
+    phoneNumber: String
+    isDefault: Boolean!
+    type: AddressType!
+}
+
+input OrderItemInput {
+    productId: ID!
+    quantity: Int!
+    customizations: [String!]
+}
+
+input CreateOrderInput {
+    customerId: ID!
+    storeId: ID!
+    items: [OrderItemInput!]!
+    shippingAddress: AddressInput!
+    billingAddress: AddressInput!
+    paymentMethod: PaymentMethod!
+    shippingPriority: ShippingPriority!
+    customerNotes: String
+}
+
+input UpdateOrderStatusInput {
+    orderId: ID!
+    status: OrderStatus!
+    comment: String
+}
+
+input AddOrderNoteInput {
+    orderId: ID!
+    note: String!
+    isCustomerVisible: Boolean!
+}
+
+extend type Mutation {
+    createOrder(input: CreateOrderInput!): OrderDetails!
+    updateOrderStatus(input: UpdateOrderStatusInput!): OrderDetails!
+    addOrderNote(input: AddOrderNoteInput!): OrderDetails!
+    cancelOrder(orderId: ID!, reason: String!): OrderDetails!
+}

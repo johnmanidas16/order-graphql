@@ -1,0 +1,32 @@
+#spring:
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/ecommerce
+#  graphql:
+#    path: /graphql
+#    graphiql:
+#      path: /graphiql
+#      enabled: true
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ecommerce
+  graphql:
+    path: /graphql
+    graphiql:
+      path: /graphiql
+      enabled: true
+    schema:
+      printer:
+        enabled: true
+    federation:
+      enabled: true
+      tracing:
+        enabled: true      
+logging:
+  level:
+    com.weather: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.web: DEBUG
+    reactor.netty.http.server: DEBUG

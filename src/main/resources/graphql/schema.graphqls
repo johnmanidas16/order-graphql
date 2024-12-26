@@ -1,0 +1,18 @@
+directive @key(fields: String!) on OBJECT | INTERFACE
+directive @link(url: String!, import: [String!]) on SCHEMA
+
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+
+scalar DateTime
+scalar BigDecimal
+scalar JSON
+
+type Query {
+    # Base query with a placeholder field
+    _empty: String
+}
+
+type Mutation {
+    # Base mutation with a placeholder field
+    _empty: String
+}
