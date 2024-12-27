@@ -1,3 +1,4 @@
+/*
 package com.product.resolver;
 
 import org.springframework.stereotype.Component;
@@ -19,4 +20,4 @@ public class ProductResolver implements GraphQLResolver<Product> {
     public Mono<Product> product(String id) {
         return productRepository.findById(id);
     }
-}
+}*/

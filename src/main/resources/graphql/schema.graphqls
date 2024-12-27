@@ -8,11 +8,27 @@ scalar BigDecimal
 scalar JSON
 
 type Query {
-    # Base query with a placeholder field
-    _empty: String
+    # Product Queries
+    products: [Product]!
+    productById(id: ID!): Product
+
+    # Order Queries
+    orderById(id: ID!): OrderDetails
+    orderByNumber(orderNumber: String!): OrderDetails
+    ordersByCustomer(customerId: ID!, limit: Int, offset: Int): [OrderDetails!]!
+    ordersByStatus(status: OrderStatus!, limit: Int, offset: Int): [OrderDetails!]!
+    recentOrders(limit: Int): [OrderDetails!]!
 }
 
 type Mutation {
-    # Base mutation with a placeholder field
-    _empty: String
+    # Product Mutations
+    addProduct(input: ProductInput!): Product
+    updateProduct(id: ID!, input: ProductUpdateInput!): Product
+    deleteProduct(id: ID!): Boolean!
+
+    # Order Mutations
+    createOrder(input: CreateOrderInput!): OrderDetails!
+    updateOrderStatus(input: UpdateOrderStatusInput!): OrderDetails!
+    addOrderNote(input: AddOrderNoteInput!): OrderDetails!
+    cancelOrder(orderId: ID!, reason: String!): OrderDetails!
 }

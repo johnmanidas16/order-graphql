@@ -1,6 +1,3 @@
-scalar DateTime
-scalar BigDecimal
-scalar JSON
 enum OrderStatus {
     CREATED
     CONFIRMED
@@ -152,14 +149,6 @@ type OrderDetails @key(fields: "id") {
     internalNotes: [OrderNote!]!
 }
 
-extend type Query {
-    orderById(id: ID!): OrderDetails
-    orderByNumber(orderNumber: String!): OrderDetails
-    ordersByCustomer(customerId: ID!, limit: Int, offset: Int): [OrderDetails!]!
-    ordersByStatus(status: OrderStatus!, limit: Int, offset: Int): [OrderDetails!]!
-    recentOrders(limit: Int): [OrderDetails!]!
-}
-
 input AddressInput {
     street: String!
     city: String!
@@ -198,11 +187,4 @@ input AddOrderNoteInput {
     orderId: ID!
     note: String!
     isCustomerVisible: Boolean!
-}
-
-extend type Mutation {
-    createOrder(input: CreateOrderInput!): OrderDetails!
-    updateOrderStatus(input: UpdateOrderStatusInput!): OrderDetails!
-    addOrderNote(input: AddOrderNoteInput!): OrderDetails!
-    cancelOrder(orderId: ID!, reason: String!): OrderDetails!
 }

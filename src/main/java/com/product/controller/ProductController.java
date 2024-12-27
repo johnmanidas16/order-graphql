@@ -3,6 +3,8 @@ package com.product.controller;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.product.input.ProductInput;
+import org.springframework.beans.BeanUtils;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -33,22 +35,16 @@ public class ProductController {
     }
 
     @MutationMapping
-    public Mono<Product> addProduct(@Argument String name, 
-                                  @Argument String description,
-                                  @Argument BigDecimal price,
-                                  @Argument Integer stockQuantity) {
-        Product product = new Product(null, name, description, price, stockQuantity, LocalDateTime.now());
+    public Mono<Product> addProduct(@Argument ProductInput input) {
+        Product product = new Product();
+        BeanUtils.copyProperties(input, product);
+        product.setCreatedAt(LocalDateTime.now());
         return productRepository.save(product);
     }
 
     @MutationMapping
-    public Mono<Product> updateProduct(@Argument String id,
-                                     @Argument String name,
-                                     @Argument String description,
-                                     @Argument BigDecimal price,
-                                     @Argument Integer stockQuantity) {
-        return productRepository.findById(id)
-            .map(p -> new Product(id, name, description, price, stockQuantity, LocalDateTime.now()))
+    public Mono<Product> updateProduct(@Argument ProductInput productInput) {
+        return productRepository.findById(productInput.getId())
             .flatMap(productRepository::save);
     }
 

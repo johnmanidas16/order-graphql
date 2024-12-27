@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Document
-public record PaymentDetails(
-        String transactionId,
-        PaymentMethod paymentMethod,
-        PaymentStatus paymentStatus,
-        BigDecimal amount,
-        String currency,
-        String gatewayResponse,
-        LocalDateTime paymentDate,
-        Map<String, String> additionalDetails
-) { }
+public class PaymentDetails {
+    String transactionId;
+    PaymentMethod paymentMethod;
+    PaymentStatus paymentStatus;
+    BigDecimal amount;
+    String currency;
+    String gatewayResponse;
+    LocalDateTime paymentDate;
+    Map<String, String> additionalDetails;
+}
